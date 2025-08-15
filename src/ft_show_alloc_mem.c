@@ -1,5 +1,4 @@
 #include "../includes/ft_malloc.h"
-#include <stdio.h>
 
 void ft_show_alloc_mem(void)
 {

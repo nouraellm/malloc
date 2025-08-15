@@ -1,5 +1,4 @@
 #include "../includes/ft_malloc.h"
-#include <stdio.h>
 
 static void print_block_ex(t_block *block)
 {

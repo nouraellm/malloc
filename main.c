@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-void *ft_malloc(size_t size);
-void ft_free(void *ptr);
-void *ft_realloc(void *ptr, size_t size);
-void ft_show_alloc_mem(void);
-void ft_show_alloc_mem_ex(void);
+#include "includes/ft_malloc.h"
 
 int main(void)
 {
@@ -14,8 +6,8 @@ int main(void)
     char *a = (char *)ft_malloc(64);
     char *b = (char *)ft_malloc(128);
     char *c = (char *)ft_malloc(3000); // LARGE zone
-    strcpy(a, "hello world");
-    strcpy(b, "this is a small block");
+    ft_strcpy(a, "hello world");
+    ft_strcpy(b, "this is a small block");
     printf("a: %s\n", a);
     printf("b: %s\n", b);
 
@@ -32,7 +24,7 @@ int main(void)
 
     printf("\n======== Test: ft_realloc() ========\n");
     char *x = (char *)ft_malloc(50);
-    strcpy(x, "realloc me");
+    ft_strcpy(x, "realloc me");
     x = ft_realloc(x, 100);
     printf("x after ft_realloc: %s\n", x);
 

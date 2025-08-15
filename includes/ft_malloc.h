@@ -39,6 +39,7 @@ void *ft_realloc(void *ptr, size_t size);
 void ft_show_alloc_mem(void);
 void *ft_memcpy(void *dst, const void *src, size_t n);
 void ft_show_alloc_mem_ex(void);
+char *ft_strcpy(char *dst, const char *src);
 
 t_zone *create_zone(t_zone_type type, size_t size);
 void *allocate_in_zone(t_zone_type type, size_t size);

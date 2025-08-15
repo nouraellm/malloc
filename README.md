@@ -32,12 +32,6 @@ This memory allocator is preloadable and can be used to override standard alloca
 ## Build Instructions
 
 ```bash
-make
-```
-
-Then run
-
-```bash
 make test
 ```
 
