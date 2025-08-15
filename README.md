@@ -23,8 +23,8 @@ This memory allocator is preloadable and can be used to override standard alloca
 - Zone allocator for TINY, SMALL, and LARGE blocks
 - Page alignment via `getpagesize()`
 - Memory usage visualization:
--  `show_alloc_mem()`: simple block display
--  `show_alloc_mem_ex()`: detailed view with free/used tracking
+	-  `show_alloc_mem()`: simple block display
+	-  `show_alloc_mem_ex()`: detailed view with free/used tracking
 - Thread-safe with global mutex
 - Performance-optimized: minimizes `mmap` calls
 - Supports dynamic preloading via `.so` file
