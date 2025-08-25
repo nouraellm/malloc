@@ -1,4 +1,5 @@
 #include "../includes/ft_malloc.h"
+#include "ft_malloc_internal.h"
 
 static void print_block_ex(t_block *block)
 {

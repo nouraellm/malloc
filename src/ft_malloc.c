@@ -1,4 +1,5 @@
 #include "../includes/ft_malloc.h"
+#include "ft_malloc_internal.h"
 
 void *ft_malloc(size_t size)
 {

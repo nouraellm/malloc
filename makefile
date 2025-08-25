@@ -1,6 +1,8 @@
 CC          := cc
-CFLAGS      := -Wall -Wextra -Werror -fPIC -I includes
-LDFLAGS     := -lpthread
+CFLAGS      := -Wall -Wextra -Werror -fPIC -fvisibility=hidden -I includes
+ifeq ($(shell uname), Darwin)
+  LDFLAGS += -Wl,-exported_symbols_list,exported_symbols.txt
+endif
 
 SRC_DIR     := src
 INC_DIR     := includes
