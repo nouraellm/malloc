@@ -2,6 +2,9 @@
 
 char *ft_strcpy(char *dst, const char *src)
 {
+    if (dst == NULL || src == NULL)
+        return NULL;
+
     int i;
 
     i = 0;
