@@ -1,4 +1,5 @@
 #include "../includes/ft_malloc.h"
+#include "ft_malloc_internal.h"
 
 static size_t get_zone_size(t_zone_type type)
 {
@@ -9,7 +10,7 @@ static size_t get_zone_size(t_zone_type type)
     return 0;
 }
 
-t_zone *create_zone(t_zone_type type, size_t size)
+static t_zone *create_zone(t_zone_type type, size_t size)
 {
     size_t zone_size = get_zone_size(type);
     t_zone *zone = mmap(NULL, zone_size, PROT_READ | PROT_WRITE,

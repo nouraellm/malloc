@@ -1,4 +1,22 @@
 #include "../includes/ft_malloc.h"
+#include "ft_malloc_internal.h"
+
+static void *ft_memcpy(void *dst, const void *src, size_t n)
+{
+    size_t	i;
+
+    i = 0;
+    if (src == NULL || dst == NULL)
+        return (0);
+    if (src == dst)
+        return ((unsigned char*)dst);
+    while (i < n)
+    {
+        ((unsigned char*)dst)[i] = ((const unsigned char*)src)[i];
+        i++;
+    }
+    return (dst);
+}
 
 void *ft_realloc(void *ptr, size_t size)
 {
