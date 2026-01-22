@@ -1,12 +1,12 @@
-#include "../includes/ft_malloc.h"
-#include "ft_malloc_internal.h"
+#include "../../includes/ft_malloc.h"
+#include "../../includes/ft_malloc_internal.h"
 
 static void print_block_ex(t_block *block)
 {
     void *start = (void *)(block + 1);
     void *end = (char *)start + block->size;
 
-    printf("  [%s] %p - %p : %zu bytes\n",
+    ft_printf("  [%s] %p - %p : %zu bytes\n",
            block->free ? "ft_free" : "USED",
            start,
            end,
@@ -26,7 +26,7 @@ void ft_show_alloc_mem_ex(void)
         const char *label = (zone->type == TINY) ? "TINY" :
                             (zone->type == SMALL) ? "SMALL" : "LARGE";
 
-        printf("%s ZONE @ %p | total zone size: %zu bytes\n", label, zone, zone->size);
+        ft_printf("%s ZONE @ %p | total zone size: %zu bytes\n", label, zone, zone->size);
 
         t_block *block = zone->blocks;
         while (block)
@@ -44,8 +44,8 @@ void ft_show_alloc_mem_ex(void)
         zone = zone->next;
     }
 
-    printf("TOTAL USED : %zu bytes\n", total_used);
-    printf("TOTAL ft_free : %zu bytes\n", total_ft_free);
+    ft_printf("TOTAL USED : %zu bytes\n", total_used);
+    ft_printf("TOTAL ft_free : %zu bytes\n", total_ft_free);
 
     pthread_mutex_unlock(&g_malloc_mutex);
 }

@@ -2,11 +2,11 @@
 # define FT_MALLOC_H
 
 # include <stdlib.h>
-# include <stdio.h>
 # include <unistd.h>
 # include <sys/mman.h>
 # include <sys/resource.h>
 # include "ft_visibility.h"
+# include "ft_printf.h"
 
 # define TINY_MAX 128
 # define SMALL_MAX 1024
