@@ -1,85 +1,218 @@
+# ft_malloc
 
-# Malloc
-
-A custom implementation of the `malloc`, `free`, and `realloc` functions in C, mimicking the behavior of the standard C library allocator, built using low-level system calls and zone-based memory management.
-
-## Project Description 
-
-This project reimplements the core dynamic memory allocation routines (`malloc`, `free`, `realloc`) without using the standard library's allocator. The allocator uses:
-
--  **`mmap`** for allocating and freeing memory pages.
--  **Zone-based allocation strategy**, where:
-	- **TINY** allocations go in preallocated TINY zones
-	- **SMALL** allocations go in SMALL zones
-	- **LARGE** allocations use separate `mmap`ed regions
--  **Thread safety** via `pthread_mutex` to ensure consistent access to allocation metadata.
--  **Custom memory visualization** with `show_alloc_mem()` and `show_alloc_mem_ex()` for debugging.
-
-This memory allocator is preloadable and can be used to override standard allocation in existing binaries via environment variables like `DYLD_INSERT_LIBRARIES` or `LD_PRELOAD`.
+A production-ready, bulletproof implementation of memory allocation functions in C, featuring zone-based memory management and thread safety.
 
 ## Features
 
-- Custom `malloc`, `free`, and `realloc` (replaces libc)
-- Zone allocator for TINY, SMALL, and LARGE blocks
-- Page alignment via `getpagesize()`
-- Memory usage visualization:
-	-  `show_alloc_mem()`: simple block display
-	-  `show_alloc_mem_ex()`: detailed view with free/used tracking
-- Thread-safe with global mutex
-- Performance-optimized: minimizes `mmap` calls
-- Supports dynamic preloading via `.so` file
+- **Bulletproof API**: Returns `bool` for success/failure, forces error checking
+- **Use-after-free prevention**: Automatically sets pointers to NULL after freeing
+- **Zone-based allocation**: Efficient memory management with TINY, SMALL, and LARGE zones
+- **Thread-safe**: Protected by mutex for concurrent access
+- **Memory visualization**: Built-in debugging tools for memory inspection
+- **Production-ready**: Comprehensive error handling and validation
 
-## Build Instructions
+## Project Structure
+
+```
+malloc/
+├── includes/              # Public and internal headers
+│   ├── ft_malloc.h       # Public API
+│   ├── ft_malloc_internal.h  # Internal structures (not for users)
+│   ├── ft_printf.h        # Printf implementation
+│   └── ft_visibility.h   # Visibility macros
+├── src/                   # Source code
+│   ├── core/             # Core allocation functions
+│   │   ├── ft_malloc.c
+│   │   ├── ft_free.c
+│   │   ├── ft_realloc.c
+│   │   ├── ft_zone.c
+│   │   └── ft_block_utils.c  # Block management utilities
+│   ├── display/          # Memory visualization
+│   │   ├── ft_show_alloc_mem.c
+│   │   └── ft_show_alloc_mem_ex.c
+│   └── utils/            # Utility functions
+│       ├── ft_debug.c
+│       ├── ft_thread.c
+│       └── ft_memcpy.c
+├── tests/                # Test files
+│   └── main.c
+├── third_party/          # External dependencies
+│   └── libftprintf.a
+├── build/                # Build artifacts (generated)
+├── docs/                 # Documentation
+├── subject/              # Project requirements
+├── makefile              # Build system
+└── README.md             # This file
+```
+
+## Quick Start
+
+### Building
 
 ```bash
+make          # Build the shared library
+make test     # Build and run tests
+make clean    # Clean build artifacts
+make fclean   # Full clean (removes library too)
+```
+
+### Usage
+
+```c
+#include "includes/ft_malloc.h"
+
+int main(void)
+{
+    void *ptr = NULL;
+    
+    // Allocate memory - always check return value
+    if (!ft_malloc(1024, &ptr))
+    {
+        // Handle allocation failure
+        return 1;
+    }
+    
+    // Use allocated memory
+    // Pointer is valid at this point
+    
+    // Free memory - pointer is automatically set to NULL
+    if (!ft_free(&ptr))
+    {
+        // Handle free operation failure
+        return 1;
+    }
+    
+    // Pointer is now NULL, preventing use-after-free errors
+    
+    return 0;
+}
+```
+
+## API Documentation
+
+### `bool ft_malloc(size_t size, void **block)`
+
+Allocates memory of the specified size.
+
+- **Parameters:**
+  - `size`: Number of bytes to allocate (must be greater than 0)
+  - `block`: Pointer to pointer that will receive the allocated memory
+- **Returns:** `true` on success, `false` on failure
+- **Notes:**
+  - On failure, `*block` is set to `NULL`
+  - On success, `*block` contains the allocated pointer
+  - Thread-safe
+
+### `bool ft_free(void **block)`
+
+Frees allocated memory and sets pointer to NULL.
+
+- **Parameters:**
+  - `block`: Pointer to pointer containing the memory to free
+- **Returns:** `true` on success, `false` on failure
+- **Notes:**
+  - After freeing, `*block` is set to `NULL` to prevent use-after-free
+  - Freeing `NULL` pointer is a valid operation with no effect and returns `true`
+  - Thread-safe
+
+### `bool ft_realloc(void **block, size_t size)`
+
+Resizes allocated memory block.
+
+- **Parameters:**
+  - `block`: Pointer to pointer containing the memory to resize
+  - `size`: New size in bytes
+- **Returns:** `true` on success, `false` on failure
+- **Notes:**
+  - If `*block` is `NULL`, equivalent to `ft_malloc(size, block)`
+  - If `size` is 0, equivalent to `ft_free(block)`
+  - On failure, `*block` remains unchanged
+  - On success, `*block` is updated to the new pointer
+  - Thread-safe
+
+### `void ft_show_alloc_mem(void)`
+
+Displays memory allocation information (allocated blocks only).
+
+### `void ft_show_alloc_mem_ex(void)`
+
+Displays detailed memory allocation information (all blocks with statistics).
+
+## Architecture
+
+### Zone Types
+
+- **TINY**: Allocations ≤ 128 bytes
+- **SMALL**: Allocations ≤ 1024 bytes  
+- **LARGE**: Allocations > 1024 bytes
+
+### Memory Layout
+
+```
+Zone Structure:
+┌─────────────────┐
+│ Zone Header     │
+├─────────────────┤
+│ Block 1 Header  │
+│ Block 1 Data    │
+├─────────────────┤
+│ Block 2 Header  │
+│ Block 2 Data    │
+└─────────────────┘
+```
+
+### Thread Safety
+
+All operations are protected by a global mutex (`g_malloc_mutex`) to ensure thread-safe access to the allocator's internal state.
+
+## Development
+
+### Code Organization
+
+- **Core functions**: `src/core/` - Main allocation logic
+- **Display functions**: `src/display/` - Memory visualization
+- **Utilities**: `src/utils/` - Helper functions
+- **Headers**: `includes/` - Public and internal APIs
+
+### Building from Source
+
+1. Ensure `libftprintf.a` is in `third_party/`
+2. Run `make` to build the shared library
+3. Run `make test` to build and execute tests
+
+### Debug Mode
+
+Set the `MALLOC_DEBUG` environment variable to enable debug output:
+
+```bash
+export MALLOC_DEBUG=1
 make test
 ```
 
-## Output
+## Design Principles
 
-```bash
-cc -Wall -Wextra -Werror -I includes main.c -L. -lft_malloc -o test_malloc
-[+] Running test with DYLD_INSERT_LIBRARIES
-DYLD_INSERT_LIBRARIES=./libft_malloc.so DYLD_FORCE_FLAT_NAMESPACE=1 ./test_malloc
-======== Test: Basic ft_malloc ========
-a: hello world
-b: this is a small block
+1. **Bulletproof by Design**: API forces error checking
+2. **Safety First**: Automatic NULL assignment prevents use-after-free
+3. **Clean Code**: Well-organized, documented, and maintainable
+4. **Production Ready**: Comprehensive error handling and validation
+5. **Thread Safe**: All operations protected by mutex
 
-======== ft_show_alloc_mem() ========
-LARGE : 0x102a60000
-0x102a60040 - 0x102a60c00 : 3008 bytes
-TINY : 0x102a50000
-0x102a50040 - 0x102a500c0 : 128 bytes
-TINY : 0x102a40000
-0x102a40040 - 0x102a40080 : 64 bytes
-Total : 3200 bytes
+## Troubleshooting
 
-======== Test: ft_free() + defrag ========
+### Build Issues
 
-======== ft_show_alloc_mem_ex() ========
-LARGE ZONE @ 0x102a60000 | total zone size: 3072 bytes
-  [ft_free] 0x102a60040 - 0x102a60c00 : 3008 bytes
-TINY ZONE @ 0x102a50000 | total zone size: 65536 bytes
-  [ft_free] 0x102a50040 - 0x102a500c0 : 128 bytes
-TINY ZONE @ 0x102a40000 | total zone size: 65536 bytes
-  [ft_free] 0x102a40040 - 0x102a40080 : 64 bytes
-TOTAL USED : 0 bytes
-TOTAL ft_free : 3200 bytes
+- **Missing libftprintf.a**: Ensure it's in `third_party/` directory
+- **Link errors**: Check that all source files are included in makefile
 
-======== Test: ft_realloc() ========
-x after ft_realloc: realloc me
+### Runtime Issues
 
-======== Final ft_show_alloc_mem_ex() ========
-LARGE ZONE @ 0x102a60000 | total zone size: 3072 bytes
-  [ft_free] 0x102a60040 - 0x102a60c00 : 3008 bytes
-TINY ZONE @ 0x102a50000 | total zone size: 65536 bytes
-  [USED] 0x102a50040 - 0x102a500c0 : 128 bytes
-TINY ZONE @ 0x102a40000 | total zone size: 65536 bytes
-  [ft_free] 0x102a40040 - 0x102a40080 : 64 bytes
-TOTAL USED : 128 bytes
-TOTAL ft_free : 3072 bytes
-```
+- **Allocation failures**: Check available system memory
+- **Thread issues**: Ensure proper mutex initialization
 
-# Disclaimer
+## License
 
-This project was developed just for fun out of 42 school supervision, please don't rely on it blindly for your school work.
+This project was developed for educational purposes.
+
+## Contributing
+
+This is a production-ready implementation following clean code practices and industry standards.

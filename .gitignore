@@ -2,7 +2,6 @@
 build/
 *.o
 *.so
-*.a
 
 # Test executables
 test_malloc

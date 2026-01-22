@@ -1,4 +1,4 @@
-#include "includes/ft_malloc.h"
+#include "../includes/ft_malloc.h"
 
 static char *ft_strcpy(char *dst, const char *src)
 {
@@ -20,9 +20,26 @@ static char *ft_strcpy(char *dst, const char *src)
 int main(void)
 {
     ft_printf("======== Test: Basic ft_malloc ========\n");
-    char *a = (char *)ft_malloc(64);
-    char *b = (char *)ft_malloc(128);
-    char *c = (char *)ft_malloc(3000); // LARGE zone
+    char *a = NULL;
+    char *b = NULL;
+    char *c = NULL;
+    
+    if (!ft_malloc(64, (void **)&a) || !a)
+    {
+        ft_printf("Failed to allocate a\n");
+        return 1;
+    }
+    if (!ft_malloc(128, (void **)&b) || !b)
+    {
+        ft_printf("Failed to allocate b\n");
+        return 1;
+    }
+    if (!ft_malloc(3000, (void **)&c) || !c) // LARGE zone
+    {
+        ft_printf("Failed to allocate c\n");
+        return 1;
+    }
+    
     ft_strcpy(a, "hello world");
     ft_strcpy(b, "this is a small block");
     ft_printf("a: %s\n", a);
@@ -32,17 +49,26 @@ int main(void)
     ft_show_alloc_mem();
 
     ft_printf("\n======== Test: ft_free() + defrag ========\n");
-    ft_free(a);
-    ft_free(b);
-    ft_free(c);
+    ft_free((void **)&a);
+    ft_free((void **)&b);
+    ft_free((void **)&c);
 
     ft_printf("\n======== ft_show_alloc_mem_ex() ========\n");
     ft_show_alloc_mem_ex();
 
     ft_printf("\n======== Test: ft_realloc() ========\n");
-    char *x = (char *)ft_malloc(50);
+    char *x = NULL;
+    if (!ft_malloc(50, (void **)&x) || !x)
+    {
+        ft_printf("Failed to allocate x\n");
+        return 1;
+    }
     ft_strcpy(x, "realloc me");
-    x = ft_realloc(x, 100);
+    if (!ft_realloc((void **)&x, 100))
+    {
+        ft_printf("Failed to realloc x\n");
+        return 1;
+    }
     ft_printf("x after ft_realloc: %s\n", x);
 
     ft_printf("\n======== Final ft_show_alloc_mem_ex() ========\n");

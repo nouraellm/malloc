@@ -12,22 +12,28 @@ ifeq ($(shell uname), Darwin)
 endif
 
 # Directories
-SRC_DIR     := src
-BUILD_DIR   := build
-INC_DIR     := includes
-FT_PRINTF_LIB := $(INC_DIR)/libftprintf.a
+SRC_DIR      := src
+BUILD_DIR    := build
+INC_DIR      := includes
+THIRD_PARTY  := third_party
+TEST_DIR     := tests
+FT_PRINTF_LIB := $(THIRD_PARTY)/libftprintf.a
 
 # Source files organized by module
-CORE_SRCS   := $(SRC_DIR)/core/ft_malloc.c \
-               $(SRC_DIR)/core/ft_free.c \
-               $(SRC_DIR)/core/ft_realloc.c \
-               $(SRC_DIR)/core/ft_zone.c
+CORE_SRCS    := $(SRC_DIR)/core/ft_malloc.c \
+                $(SRC_DIR)/core/ft_free.c \
+                $(SRC_DIR)/core/ft_realloc.c \
+                $(SRC_DIR)/core/ft_zone.c \
+                $(SRC_DIR)/core/ft_block_utils.c \
+                $(SRC_DIR)/core/ft_zone_manager.c
 
 DISPLAY_SRCS := $(SRC_DIR)/display/ft_show_alloc_mem.c \
                 $(SRC_DIR)/display/ft_show_alloc_mem_ex.c
 
-UTILS_SRCS  := $(SRC_DIR)/utils/ft_debug.c \
-               $(SRC_DIR)/utils/ft_thread.c
+UTILS_SRCS   := $(SRC_DIR)/utils/ft_debug.c \
+                $(SRC_DIR)/utils/ft_thread.c \
+                $(SRC_DIR)/utils/ft_memcpy.c \
+                $(SRC_DIR)/utils/ft_malloc_errors.c
 
 SRC_FILES   := $(CORE_SRCS) $(DISPLAY_SRCS) $(UTILS_SRCS)
 OBJ_FILES   := $(SRC_FILES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
@@ -45,10 +51,15 @@ MAIN_FILE   := main.c
 # Default target
 all: $(NAME) symlink
 
+# Create third_party directory if needed
+$(THIRD_PARTY):
+	@mkdir -p $(THIRD_PARTY)
+
 # Check if ft_printf library exists
-$(FT_PRINTF_LIB):
+$(FT_PRINTF_LIB): | $(THIRD_PARTY)
 	@if [ ! -f $(FT_PRINTF_LIB) ]; then \
 		echo "Error: $(FT_PRINTF_LIB) not found!"; \
+		echo "Please ensure libftprintf.a is in $(THIRD_PARTY)/"; \
 		exit 1; \
 	fi
 
@@ -75,9 +86,9 @@ symlink: $(NAME)
 	@ln -sf $(NAME) $(SO_LINK)
 
 # Build test executable
-$(TEST_NAME): $(MAIN_FILE) $(NAME)
-	@$(CC) -Wall -Wextra -Werror -I includes \
-		$(MAIN_FILE) -L. -lft_malloc -o $(TEST_NAME)
+$(TEST_NAME): $(TEST_DIR)/main.c $(NAME)
+	@$(CC) -Wall -Wextra -Werror -I $(INC_DIR) \
+		$(TEST_DIR)/main.c -L. -lft_malloc -o $(TEST_NAME)
 
 # Run tests
 test: all $(TEST_NAME)

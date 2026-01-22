@@ -15,9 +15,10 @@ static void print_block_ex(t_block *block)
 
 void ft_show_alloc_mem_ex(void)
 {
-    pthread_mutex_lock(&g_malloc_mutex);
+    if (zone_manager_lock() != 0)
+        return;
 
-    t_zone *zone = g_zones;
+    t_zone *zone = zone_manager_get_zones();
     size_t total_used = 0;
     size_t total_ft_free = 0;
 
@@ -47,5 +48,5 @@ void ft_show_alloc_mem_ex(void)
     ft_printf("TOTAL USED : %zu bytes\n", total_used);
     ft_printf("TOTAL ft_free : %zu bytes\n", total_ft_free);
 
-    pthread_mutex_unlock(&g_malloc_mutex);
+    zone_manager_unlock();
 }

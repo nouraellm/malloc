@@ -3,9 +3,10 @@
 
 void ft_show_alloc_mem(void)
 {
-    pthread_mutex_lock(&g_malloc_mutex);
+    if (zone_manager_lock() != 0)
+        return;
 
-    t_zone *zone = g_zones;
+    t_zone *zone = zone_manager_get_zones();
     size_t total = 0;
 
     while (zone)
@@ -34,5 +35,5 @@ void ft_show_alloc_mem(void)
 
     ft_printf("Total : %zu bytes\n", total);
 
-    pthread_mutex_unlock(&g_malloc_mutex);
+    zone_manager_unlock();
 }
