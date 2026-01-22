@@ -3,3 +3,4 @@ _ft_free
 _ft_realloc
 _ft_show_alloc_mem
 _ft_show_alloc_mem_ex
+_ft_printf

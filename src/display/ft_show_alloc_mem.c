@@ -1,5 +1,5 @@
-#include "../includes/ft_malloc.h"
-#include "ft_malloc_internal.h"
+#include "../../includes/ft_malloc.h"
+#include "../../includes/ft_malloc_internal.h"
 
 void ft_show_alloc_mem(void)
 {
@@ -13,7 +13,7 @@ void ft_show_alloc_mem(void)
         const char *label = (zone->type == TINY) ? "TINY" :
                             (zone->type == SMALL) ? "SMALL" : "LARGE";
 
-        printf("%s : %p\n", label, zone);
+        ft_printf("%s : %p\n", label, zone);
 
         t_block *block = zone->blocks;
         while (block)
@@ -22,7 +22,7 @@ void ft_show_alloc_mem(void)
             {
                 void *start = (void *)(block + 1);
                 void *end = (char *)start + block->size;
-                printf("%p - %p : %zu bytes\n", start, end, block->size);
+                ft_printf("%p - %p : %zu bytes\n", start, end, block->size);
                 total += block->size;
             }
 
@@ -32,7 +32,7 @@ void ft_show_alloc_mem(void)
         zone = zone->next;
     }
 
-    printf("Total : %zu bytes\n", total);
+    ft_printf("Total : %zu bytes\n", total);
 
     pthread_mutex_unlock(&g_malloc_mutex);
 }

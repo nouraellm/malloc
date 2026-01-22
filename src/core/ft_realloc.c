@@ -1,5 +1,5 @@
-#include "../includes/ft_malloc.h"
-#include "ft_malloc_internal.h"
+#include "../../includes/ft_malloc.h"
+#include "../../includes/ft_malloc_internal.h"
 
 static void *ft_memcpy(void *dst, const void *src, size_t n)
 {

@@ -1,3 +1,23 @@
-*.out
-*.DS_Store
-.vscode
+# Build artifacts
+build/
+*.o
+*.so
+*.a
+
+# Test executables
+test_malloc
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project specific
+libft_malloc*.so
+libft_malloc.so

@@ -1,5 +1,5 @@
-#include "../includes/ft_malloc.h"
-#include "ft_malloc_internal.h"
+#include "../../includes/ft_malloc.h"
+#include "../../includes/ft_malloc_internal.h"
 
 static size_t get_zone_size(t_zone_type type)
 {

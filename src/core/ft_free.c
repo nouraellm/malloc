@@ -1,5 +1,5 @@
-#include "../includes/ft_malloc.h"
-#include "ft_malloc_internal.h"
+#include "../../includes/ft_malloc.h"
+#include "../../includes/ft_malloc_internal.h"
 
 static void merge_free_blocks(t_zone *zone)
 {
